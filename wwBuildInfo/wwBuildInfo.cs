@@ -16,7 +16,7 @@ namespace wwBuildInfo
         }
         public string GetUrl()
         {
-            return "https://example.com";
+            return "https://github.com/Merlin04/webweb";
         }
         public IConfigurationSection getSiteSettings()
         {
