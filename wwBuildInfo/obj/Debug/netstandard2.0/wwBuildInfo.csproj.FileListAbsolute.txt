@@ -1,0 +1,9 @@
+/home/benjamin/webweb-core/wwBuildInfo/obj/Debug/netstandard2.0/wwBuildInfo.csprojAssemblyReference.cache
+/home/benjamin/webweb-core/wwBuildInfo/obj/Debug/netstandard2.0/wwBuildInfo.csproj.CoreCompileInputs.cache
+/home/benjamin/webweb-core/wwBuildInfo/obj/Debug/netstandard2.0/wwBuildInfo.AssemblyInfoInputs.cache
+/home/benjamin/webweb-core/wwBuildInfo/obj/Debug/netstandard2.0/wwBuildInfo.AssemblyInfo.cs
+/home/benjamin/webweb-core/wwBuildInfo/obj/Debug/netstandard2.0/wwBuildInfo.dll
+/home/benjamin/webweb-core/wwBuildInfo/obj/Debug/netstandard2.0/wwBuildInfo.pdb
+/home/benjamin/webweb-core/wwBuildInfo/bin/Debug/netstandard2.0/wwBuildInfo.deps.json
+/home/benjamin/webweb-core/wwBuildInfo/bin/Debug/netstandard2.0/wwBuildInfo.dll
+/home/benjamin/webweb-core/wwBuildInfo/bin/Debug/netstandard2.0/wwBuildInfo.pdb

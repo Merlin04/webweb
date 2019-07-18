@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Test title</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.5/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.5/dist/semantic.min.js"></script>
+        <style>
+            body {
+                margin: 14px;
+            
+            }
+            .version {
+                
+            }
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }   
+            $(document).ready(function() {
+                $('#customContent').html(decodeHtml("@ViewData["CustomHtml"]"));
+            });
+        </script>
+    </head>
+    <body>
+        <div class="ui inverted menu">
+            <a class="active item">
+                Home
+            </a>
+            <div class="right item">
+                <div class="ui inverted transparent input">
+                    <input type="text" placeholder="Navigate to...">
+                </div>
+                <div class="ui black button">Go</div>
+            </div>
+        </div>
+        <p>You should never see this page. </p>
+        <div id="customContent"></div>
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text">Powered by webweb @ViewData["versionNumber"]</span>
+    </body>
+</html>
+
+
+

@@ -1,0 +1,102 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Syntax guide | @ViewData["SiteName"]</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <style>
+            body {
+                margin: 14px;
+                /*margin-right: 14px;*/
+            }
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            $( document ).ready(function() {
+                $('.dropdown').dropdown();
+            });
+        </script>
+    </head>
+    <body>
+        <partial name="_Navbar" />
+        <div id="customContent">
+            <div class="ui header">
+                Syntax guide
+            </div>
+            <p>With @ViewData["SoftwareName"], you can edit the HTML of a page to gain full control of its contents. However, HTML syntax can be cumbersome, so webweb lets you use abbreviated syntax to edit pages faster.</p>
+            <div class="ui small header">
+                Links
+            </div>
+            <p>To link to internal pages, you can use square brackets [[like this]]. You can escape square brackets using backslash.</p>
+            <p>What you write: <code>[[PageName]]</code></p>
+            <p>What you get: <code>&lt;a href=&quot;/ViewPage/PageName&quot;&gt;PageName&lt;/a&gt;</code></p>
+            <p>Here's some more examples to show how escaping works:</p>
+            <code>
+                [[This should be a link]]<br>
+                [[This should also be a link]][[s]][[mall links work too]]<br>
+                \[[This should not be a link]][[but this one should be]]<br>
+                [[this should be a link]]\[[but this one shouldn't be]]<br>
+                [[]]<br>
+                [[This should be a link despite \]] having escaped \]]s in it]]<br>
+                [[[[wow extra brackets, but this should still work]]]]
+            </code>
+            <div class="ui small header">
+                Page name
+            </div>
+            <p>To get the current page name, type <code>{{PAGENAME}}</code>.</p>
+            <p>What you write: <code>{{PAGENAME}}</code></p>
+            <p>What you get: <code>Index</code></p>
+            <div class="ui small header">
+                Hide navbar
+            </div>
+            <p>In some cases, you may wish to hide the navbar. Luckily, that is easy to do. Just put <code>{{HIDENAVBAR}}</code> at the top of your page. Make sure to put a line break after it, like this:</p>
+            <code>
+                {{HIDENAVBAR}}<br/>
+                Page contents go here
+            </code>
+            <p style="margin-top: 1em">To access the navbar on a page where it is hidden, either press the <kbd>ESC</kbd> key or click on the version text at the bottom of a page.</p>
+            <div class="ui small header">
+                Remove margin
+            </div>
+            <p>To make the content of the page look nicer, @ViewData["SoftwareName"] automatically applies a margin of <code>1em</code> to the <code>&lt;body&gt;</code> element. You can disable this by typing <code>{{NOMARGIN}}</code>, similar to how you would use <code>{{HIDENAVBAR}}</code>.</p>
+            <div class="ui small header">
+                Structure of document
+            </div>
+            <p>When applying styles to the document, you should apply them to the element that contains the custom HTML, not the <code>&lt;body&gt;</code> element. If you apply styles to the <code>&lt;body&gt;</code> element, the navbar will also be affected.</p>
+            <code>
+                &lt;head&gt;<br/>
+                &nbsp;&nbsp;&lt;style&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- Custom CSS goes here --&gt; <br/>
+                &nbsp;&nbsp;&lt;/style&gt;<br/>
+                &lt;/head&gt;<br/>
+                &lt;body&gt; <br/>
+                &nbsp;&nbsp;&lt;div id=&quot;navbarContainer&quot;&gt; <br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- Navbar goes here --&gt; <br/>
+                &nbsp;&nbsp;&lt;/div&gt; <br/>
+                &nbsp;&nbsp;&lt;div id=&quot;customContent&quot;&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- Custom HTML goes here --&gt;<br/>
+                &nbsp;&nbsp;&lt;/div&gt;<br/>
+                &nbsp;&nbsp;&lt;div class=&quot;ui divider&quot;&gt;&lt;/div&gt;<br/>
+                &nbsp;&nbsp;&lt;span id=&quot;version=&quot;&gt;&lt;/span&gt;<br/>
+                &nbsp;&nbsp;&lt;script&gt;&lt;!-- Custom JS goes here --&gt;&lt;/script&gt;<br/>
+                &lt;/body&gt;<br/>
+            </code>
+        </div>
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+    </body>
+</html>
+
+
+
+

@@ -1,0 +1,9 @@
+/home/benjamin/webweb-core/SqlAccess/obj/Debug/netstandard2.0/SqlAccess.csproj.CoreCompileInputs.cache
+/home/benjamin/webweb-core/SqlAccess/obj/Debug/netstandard2.0/SqlAccess.AssemblyInfoInputs.cache
+/home/benjamin/webweb-core/SqlAccess/obj/Debug/netstandard2.0/SqlAccess.AssemblyInfo.cs
+/home/benjamin/webweb-core/SqlAccess/obj/Debug/netstandard2.0/SqlAccess.dll
+/home/benjamin/webweb-core/SqlAccess/obj/Debug/netstandard2.0/SqlAccess.pdb
+/home/benjamin/webweb-core/SqlAccess/bin/Debug/netstandard2.0/SqlAccess.deps.json
+/home/benjamin/webweb-core/SqlAccess/bin/Debug/netstandard2.0/SqlAccess.dll
+/home/benjamin/webweb-core/SqlAccess/bin/Debug/netstandard2.0/SqlAccess.pdb
+/home/benjamin/webweb-core/SqlAccess/obj/Debug/netstandard2.0/SqlAccess.csprojAssemblyReference.cache

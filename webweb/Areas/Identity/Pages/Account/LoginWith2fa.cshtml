@@ -1,0 +1,75 @@
+﻿@page
+@model LoginWith2faModel
+@{
+    wwBuildInfo.wwBuildInfo wwbi = new wwBuildInfo.wwBuildInfo();
+    ViewData["SoftwareName"] = wwbi.GetName();
+    ViewData["VersionNumber"] = wwbi.GetVersion();
+    ViewData["ProjectUrl"] = wwbi.GetUrl();
+    ViewData["SiteName"] = wwbi.getSiteSettings()["SiteName"];
+}
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Log in | @ViewData["SiteName"]</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <style>
+            body {
+                margin: 14px;
+                /*margin-right: 14px;*/
+            }
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            $( document ).ready(function() {
+                $('.dropdown').dropdown();
+            });
+        </script>
+    </head>
+    <body>
+        <partial name="_Navbar" />
+        <div id="customContent">
+            <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+                <h1>Enter 2FA code</h1>
+                <p>Alternatively, <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">log in with a recovery code.</a></p>
+                <input asp-for="RememberMe" type="hidden" />
+                <div asp-validation-summary="All"></div>
+                <div class="ui form">
+                    <div class="field">
+                        <label asp-for="Input.TwoFactorCode"></label>
+                        <input asp-for="Input.TwoFactorCode" type="text" autocomplete="off" />
+                        <span asp-validation-for="Input.TwoFactorCode" class="text-danger"></span>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" asp-for="Input.RememberMachine" class="hidden" />
+                            <label asp-for="Input.RememberMachine">
+                                @Html.DisplayNameFor(m => m.Input.RememberMachine)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <button type="submit" class="ui button">Log in</button>
+            </form>
+        </div>
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+    </body>
+</html>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

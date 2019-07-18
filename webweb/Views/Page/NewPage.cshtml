@@ -1,0 +1,139 @@
+﻿@{
+    Layout = null;
+}
+
+@using Microsoft.AspNetCore.Html;
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>New Page | @ViewData["SiteName"]</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <style>
+            body {
+                margin: 14px;
+                /*margin-right: 14px;*/
+            }
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            $(document).ready(function() {
+                $('.ui.dropdown').dropdown();
+                $('#newTemplatePage').submit(function(event) {
+                    $('#pageNameTemplate').val($('#pageName').val());
+                    $('#saveAsDraftTemplate').val($('#saveAsDraft').is(':checked').toString());
+                    if($('#pageName').val().indexOf(":") > -1) {alert("Page name cannot contain :"); return false;}
+                    return true; // return false to cancel form action
+                });
+                $('#newEmptyPage').submit(function(event) {
+                    $('#pageNameEmpty').val($('#pageName').val());
+                    $('#saveAsDraftEmpty').val($('#saveAsDraft').is(':checked').toString());
+                    if($('#pageName').val().indexOf(":") > -1) {alert("Page name cannot contain :"); return false;}
+                    return true; // return false to cancel form action
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <!--<div class="ui inverted menu">
+            <a href="/" class="item">
+                Home
+            </a>
+            <form class="right item" id="navigateForm" action="/Page/NavigateForm" method="post">
+                <div class="ui inverted transparent input">
+                    <input type="text" name="pageName" placeholder="Navigate to...">
+                </div>
+                <button type="submit" class="ui black button">Go</button>
+            </form>
+            <div class="ui inverted dropdown icon item">
+                <i class="wrench icon"></i>
+                <div class="menu">
+                    <a class="item" href="/ViewPage/Special|List of pages">
+                        Special|List of pages
+                    </a>
+                    <a class="item" href="/NewPage">
+                        New Page
+                    </a>
+                    <a class="item" href="/ManageTemplates">
+                        Manage Templates
+                    </a>
+                    <a class="item" href="/ManageFiles">
+                        Manage Files
+                    </a>
+                    <a class="item" href="/Admin/ControlPanel">
+                        Control Panel
+                    </a>
+                    <a class="item" href="/Docs/About">
+                        About @ViewData["SoftwareName"]
+                    </a>
+                    <a class="item" href="/Docs/Syntax">
+                        Syntax Guide
+                    </a>
+                </div>
+            </div>
+        </div>-->
+        <partial name="_Navbar" />
+        <div id="customContent">
+            <div class="ui header">Add a new page</div>
+            <div class="ui labeled input">
+                <div class="ui label">
+                    Page Title
+                </div>
+                <input type="text" id="pageName">
+            </div>
+            <div class="ui checkbox">
+                <input type="checkbox" id="saveAsDraft">
+                <label>Save page as draft</label>
+            </div>
+            <div class="ui segment">
+                <div class="ui two column very relaxed grid">
+                    <div class="column">
+                        <form id="newTemplatePage" action="/Page/NewTemplatePage" method="post">
+                            <!-- Choose a template -->
+                            <div class="ui small header">
+                                Choose a template
+                            </div>
+                            <p>Start from a pre-made template. You can edit the page after the template's been applied.</p>
+                            <div class="ui fluid long selection dropdown">
+                                <input type="hidden" name="template">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Template</div>
+                                <div class="menu">
+                                    @(new HtmlString(ViewData["TemplateHtml"].ToString()))
+                                </div>
+                            </div>
+                            <br>
+                            <input type="hidden" name="pageName" id="pageNameTemplate">
+                            <input type="hidden" name="saveAsDraft" id="saveAsDraftTemplate">
+                            <button type="submit" class="ui button">Go</button>
+                        </form>
+                    </div>
+                    <div class="middle aligned column">
+                        <form id="newEmptyPage" action="/Page/NewEmptyPage" method="post">
+                            <!-- Start from scratch -->
+                            <div class="ui small header">
+                                Start from scratch
+                            </div>
+                            <p>Write all the HTML, CSS, and JS yourself.</p>
+                            <input type="hidden" name="pageName" id="pageNameEmpty">
+                            <input type="hidden" name="saveAsDraft" id="saveAsDraftEmpty">
+                            <button type="submit" class="ui button">Go</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="ui vertical divider">
+                    Or
+                </div>
+            </div>
+        </div>
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+    </body>
+</html>

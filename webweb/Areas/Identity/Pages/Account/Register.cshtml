@@ -1,0 +1,88 @@
+﻿@page
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@model RegisterModel
+@{
+    wwBuildInfo.wwBuildInfo wwbi = new wwBuildInfo.wwBuildInfo();
+    ViewData["SoftwareName"] = wwbi.GetName();
+    ViewData["VersionNumber"] = wwbi.GetVersion();
+    ViewData["ProjectUrl"] = wwbi.GetUrl();
+    ViewData["SiteName"] = wwbi.getSiteSettings()["SiteName"];
+}
+
+@{
+    Layout = null;
+}
+
+@{
+    string token = HttpContext.Request.Query["code"].ToString();
+    SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+    bool tokenValid = sa.CheckRegisterToken(token);
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Register | @ViewData["SiteName"]</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <style>
+            body {
+                margin: 14px;
+                /*margin-right: 14px;*/
+            }
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            $( document ).ready(function() {
+                $('.dropdown').dropdown();
+            });
+        </script>
+    </head>
+    <body>
+        <partial name="_Navbar" />
+        @if(UserManager.Users.ToList().Count < 1 || SignInManager.IsSignedIn(User) || tokenValid){
+        <div id="customContent">
+            <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <h1>Register an account</h1>
+                <p>Once you click "Register", the credentials will have full access to all of the tools @ViewData["SoftwareName"] has to offer, including editing and deleting pages, and uploading files to the server. Don't do this if the owner of the new credentials isn't trusted.</p>
+                <div asp-validation-summary="All"></div>
+                <div class="ui form">
+                    <div class="field">
+                        <label asp-for="Input.Email"></label>
+                        <input asp-for="Input.Email" type="email" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Input.Password"></label>
+                        <input asp-for="Input.Password" type="password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Input.ConfirmPassword"></label>
+                        <input asp-for="Input.ConfirmPassword" type="password" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" asp-for="Input.RegisterToken" value="@token" />
+                </div>
+                <br>
+                <button type="submit" class="ui button">Register</button>
+            </form>
+        </div>}
+        else {
+        <h1>You are not authorized to access this page.</h1>
+        }
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+    </body>
+</html>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

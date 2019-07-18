@@ -1,0 +1,289 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/benjamin/webweb-core/webweb/webweb.csproj": {}
+  },
+  "projects": {
+    "/home/benjamin/webweb-core/SqlAccess/SqlAccess.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/benjamin/webweb-core/SqlAccess/SqlAccess.csproj",
+        "projectName": "SqlAccess",
+        "projectPath": "/home/benjamin/webweb-core/SqlAccess/SqlAccess.csproj",
+        "packagesPath": "/home/benjamin/.nuget/packages/",
+        "outputPath": "/home/benjamin/webweb-core/SqlAccess/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/home/benjamin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.Extensions.FileProviders.Abstractions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.2, )"
+            },
+            "System.Configuration.ConfigurationManager": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "System.Data.SQLite": {
+              "target": "Package",
+              "version": "[1.0.111, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.6.1, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "/home/benjamin/webweb-core/webweb/webweb.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/benjamin/webweb-core/webweb/webweb.csproj",
+        "projectName": "webweb",
+        "projectPath": "/home/benjamin/webweb-core/webweb/webweb.csproj",
+        "packagesPath": "/home/benjamin/.nuget/packages/",
+        "outputPath": "/home/benjamin/webweb-core/webweb/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/home/benjamin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {
+              "/home/benjamin/webweb-core/SqlAccess/SqlAccess.csproj": {
+                "projectPath": "/home/benjamin/webweb-core/SqlAccess/SqlAccess.csproj"
+              },
+              "/home/benjamin/webweb-core/wwBuildInfo/wwBuildInfo.csproj": {
+                "projectPath": "/home/benjamin/webweb-core/wwBuildInfo/wwBuildInfo.csproj"
+              },
+              "/home/benjamin/webweb-core/wwFileAccess/wwFileAccess.csproj": {
+                "projectPath": "/home/benjamin/webweb-core/wwFileAccess/wwFileAccess.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.AspNetCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.AspNetCore.Razor.Design": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[2.2.6, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[2.2.3, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "/home/benjamin/webweb-core/wwBuildInfo/wwBuildInfo.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/benjamin/webweb-core/wwBuildInfo/wwBuildInfo.csproj",
+        "projectName": "wwBuildInfo",
+        "projectPath": "/home/benjamin/webweb-core/wwBuildInfo/wwBuildInfo.csproj",
+        "packagesPath": "/home/benjamin/.nuget/packages/",
+        "outputPath": "/home/benjamin/webweb-core/wwBuildInfo/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/home/benjamin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.Extensions.FileProviders.Abstractions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.2, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "/home/benjamin/webweb-core/wwFileAccess/wwFileAccess.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/benjamin/webweb-core/wwFileAccess/wwFileAccess.csproj",
+        "projectName": "wwFileAccess",
+        "projectPath": "/home/benjamin/webweb-core/wwFileAccess/wwFileAccess.csproj",
+        "packagesPath": "/home/benjamin/.nuget/packages/",
+        "outputPath": "/home/benjamin/webweb-core/wwFileAccess/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/home/benjamin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "Microsoft.AspNetCore.Hosting": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

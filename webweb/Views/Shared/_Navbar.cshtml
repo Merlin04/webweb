@@ -1,0 +1,214 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!-- Regular menu -->
+<div class="ui inverted menu" id="desktopMenu">
+    @try
+    {
+        if (ViewData["PageName"].ToString() == "Index")
+        {
+            <a href="/" class="active item">
+                Home
+            </a>
+            if (SignInManager.IsSignedIn(User))
+            {
+                <a href="/EditPage/@ViewData["PageName"]" class="item">
+                    Edit Page
+                </a>
+            }
+        }
+        else if (ViewData["PageName"].ToString().Length > 0)
+        {
+            <a href="/" class="item">
+                Home
+            </a>
+            <a href="/ViewPage/@ViewData["PageName"]" class="active item">
+                @ViewData["PageName"]
+            </a>
+            if (SignInManager.IsSignedIn(User))
+            {
+                <a href="/EditPage/@ViewData["PageName"]" class="item">
+                    Edit Page
+                </a>
+            }
+        }
+        else
+        {
+            <a href="/" class="item">
+                Home
+            </a>
+        }
+    }
+    catch
+    {
+        <a href="/" class="item">
+            Home
+        </a>
+    }
+    <form class="item" id="navigateForm" action="/Page/NavigateForm" method="post">
+        <div class="ui inverted transparent input">
+            <input type="text" name="pageName" placeholder="Navigate to...">
+        </div>
+        <button type="submit" class="ui black button">Go</button>
+    </form>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <a class="right item" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello, @User.Identity.Name!</a>
+        <form class="item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnurl="@Url.Action("ViewPage", "Page", new {area = ""})">
+            <button id="logoutButton" type="submit" class="ui black button">Logout</button>
+        </form>
+        <div class="ui inverted dropdown icon item">
+            <i class="wrench icon"></i>
+            <div class="menu">
+                <a class="item" href="/ViewPage/Special|List of pages">
+                    Special|List of pages
+                </a>
+                <a class="item" href="/NewPage">
+                    New Page
+                </a>
+                <a class="item" href="/ManageTemplates">
+                    Manage Templates
+                </a>
+                <a class="item" href="/ManageFiles">
+                    Manage Files
+                </a>
+                <a class="item" href="/Admin/ControlPanel">
+                    Control Panel
+                </a>
+                <a class="item" href="/Docs/About">
+                    About @ViewData["SoftwareName"]
+                </a>
+                <a class="item" href="/Docs/Syntax">
+                    Syntax Guide
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <a class="right item" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    }
+</div>
+
+<!-- Mobile menu -->
+<div class="ui inverted menu" id="mobileMenuButton">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <a onclick="$('#mobileMenu').accordion('toggle', 0)" class="ui item" id="mobileMenuTrigger">
+            <i class="sidebar icon"></i>
+        </a>
+    }
+    @try
+    {
+        if (ViewData["PageName"].ToString() == "Index")
+        {
+            <a class="ui active item" href="/">
+                Home
+            </a>
+        }
+        else
+        {
+            <a class="ui item" href="/">
+                Home
+            </a>
+        }
+    }
+    catch
+    {
+        <a class="ui item" href="/">
+            Home
+        </a>
+    }
+    <form style="flex-grow: 1;" class="item" action="/Page/NavigateForm" method="post">
+        <div class="ui inverted transparent input">
+            <input style="width: 10px;" type="text" name="pageName" placeholder="Navigate to...">
+        </div>
+        <button style="padding-left: 8px; padding-right: 8px;" type="submit" class="ui black button">Go</button>
+    </form>
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <a class="ui item" asp-area="Identity" asp-page="/Account/Login">
+            <i class="sign in alternate icon"></i>
+        </a>
+    }
+</div>
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="ui fluid accordion" id="mobileMenu">
+        <div class="title" style="display:none">
+
+        </div>
+        <div class="content" style="padding-bottom: 21px;">
+            <div class="ui stackable inverted menu">
+                <a href="/EditPage/@ViewData["PageName"]" class="item">
+                    Edit Page
+                </a>
+                <a class="right item" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage Account</a>
+                <a class="item" href="#" onclick="$('#logoutButton').click();">
+                    Logout
+                </a>
+                <a class="item" href="/ViewPage/Special|List of pages">
+                    Special|List of pages
+                </a>
+                <a class="item" href="/NewPage">
+                    New Page
+                </a>
+                <a class="item" href="/ManageTemplates">
+                    Manage Templates
+                </a>
+                <a class="item" href="/ManageFiles">
+                    Manage Files
+                </a>
+                <a class="item" href="/Admin/ControlPanel">
+                    Control Panel
+                </a>
+                <a class="item" href="/Docs/About">
+                    About @ViewData["SoftwareName"]
+                </a>
+                <a class="item" href="/Docs/Syntax">
+                    Syntax Guide
+                </a>
+            </div>
+        </div>
+    </div>
+}
+@{
+    if (SignInManager.IsSignedIn(User))
+    {
+        ViewData["mobileWidth"] = "900px"; // Signed in users have more navbar items
+    }
+    else
+    {
+        ViewData["mobileWidth"] = "500px";
+    }
+}
+<script>
+    $(document).ready(function() {
+        $('.ui.accordion')
+          .accordion()
+        ;
+    });
+    // Add style through JS so that I don't have to go through every file and add it
+    var styles = `
+    #mobileMenu, #mobileMenuButton {
+        display: none;
+    }
+    @@media only screen and (max-width: @ViewData["mobileWidth"]) {
+          #desktopMenu {
+            display: none !important;
+          }
+          #mobileMenuButton {
+            display: flex;
+            margin-top: 0px;
+          }
+          #mobileMenu {
+            display: flex;
+          }
+        }
+    `;
+    var styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+</script>

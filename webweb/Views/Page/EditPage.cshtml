@@ -1,0 +1,164 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+        <title>Editing @ViewData["PageName"] | @ViewData["SiteName"]</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <script src="/Content/monaco-editor/min/vs/loader.js"></script>
+        <style>
+            body {
+                margin: 14px;
+                /*margin-right: 14px;*/
+            }
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            var saveAsDraft = "";
+            function setSaveAsDraft(value) {
+                saveAsDraft = value;
+            }
+            $(document).ready(function() {
+                //if(!@ViewData["ShowUndraftButton"]) {
+                //    $("#undraftButton").hide();
+                //}
+            });
+        </script>
+    </head>
+    <body>
+        <script>
+            require.config({ paths: { 'vs': '/Content/monaco-editor/min/vs' }});
+            var editor;
+            var editor2;
+            var editor3;
+            require(['vs/editor/editor.main'], function() {
+                editor = monaco.editor.create(document.getElementById('monacoContainerHtml'), {
+                    value: decodeHtml("@ViewData["HtmlEdit"]"),
+                    language: 'html'
+                });
+            });
+            require(['vs/editor/editor.main'], function() {
+                editor2 = monaco.editor.create(document.getElementById('monacoContainerCss'), {
+                    value: decodeHtml("@ViewData["CssEdit"]"),
+                    language: 'css'
+                });
+            });
+            require(['vs/editor/editor.main'], function() {
+                editor3 = monaco.editor.create(document.getElementById('monacoContainerJs'), {
+                    value: decodeHtml("@ViewData["JsEdit"]"),
+                    language: 'javascript'
+                });
+            });
+            $(document).ready(function() {
+                $('#editPageForm').submit(function(event) {
+                    $('#saveAsDraft').val(saveAsDraft);
+                    $('#HtmlEdit').val(editor.getValue());
+                    $('#CssEdit').val(editor2.getValue());
+                    $('#JsEdit').val(editor3.getValue());
+                    //alert($('#saveAsDraft').val());
+                    return true; // return false to cancel form action
+                });
+                $('.dropdown').dropdown();
+            });
+        </script>
+        <!--<div class="ui inverted menu">
+            @if (ViewData["PageName"].ToString() == "Index") {
+            <a href="/" class="active item">
+                Home
+            </a>
+            }
+            else {
+            <a href="/" class="item">
+                Home
+            </a>
+            <a href="/ViewPage/@ViewData["PageName"]" class="active item">
+                @ViewData["PageName"]
+            </a>
+            }
+            <form class="right item" id="navigateForm" action="/Page/NavigateForm" method="post">
+                <div class="ui inverted transparent input">
+                    <input type="text" name="pageName" placeholder="Navigate to...">
+                </div>
+                <button type="submit" class="ui black button">Go</button>
+            </form>
+            <div class="ui inverted dropdown icon item">
+                <i class="wrench icon"></i>
+                <div class="menu">
+                    <a class="item" href="/ViewPage/Special|List of pages">
+                        Special|List of pages
+                    </a>
+                    <a class="item" href="/NewPage">
+                        New Page
+                    </a>
+                    <a class="item" href="/ManageTemplates">
+                        Manage Templates
+                    </a>
+                    <a class="item" href="/ManageFiles">
+                        Manage Files
+                    </a>
+                    <a class="item" href="/Admin/ControlPanel">
+                        Control Panel
+                    </a>
+                    <a class="item" href="/Docs/About">
+                        About @ViewData["SoftwareName"]
+                    </a>
+                    <a class="item" href="/Docs/Syntax">
+                        Syntax Guide
+                    </a>
+                </div>
+            </div>
+        </div>-->
+        <partial name="_Navbar" />
+        <div id="customContent">
+            <form id="editPageForm" action="/Page/EditPageForm" method="post">
+                <div class="ui header">Editing @ViewData["PageName"]<span style="float: right"><a href="/Docs/Syntax">Syntax guide</a></span></div>
+                <button onclick="setSaveAsDraft('Yes'); $('#saveButton').click()" id="saveAsDraftButton" class="ui button">Save as Draft|@ViewData["PageName"]</button><button type="submit" id="saveButton" class="ui button">Save as @ViewData["PageName"]</button>@if (ViewData["ShowUndraftButton"].ToString() == "true") {<button onclick="setSaveAsDraft('Undraft'); $('#saveButton').click()" id="undraftButton" class="ui button">Save and undraft page</button>}
+                <input type="hidden" name="HtmlEdit" id="HtmlEdit">
+                <input type="hidden" name="CssEdit" id="CssEdit">
+                <input type="hidden" name="JsEdit" id="JsEdit">
+                <input type="hidden" name="saveAsDraft" id="saveAsDraft">
+                <input type="hidden" name="pageName" value="@ViewData["PageName"]">
+            </form>
+            <br><br>
+            <!--<div class="ui form">
+                <div class="ui input">
+                    <label>Text</label>
+                    @Html.TextArea("HtmlEdit", new {rows="6", cols="50"})
+                </div>
+            </div>-->
+            <div class="ui grid">
+                <div class="sixteen wide column">
+                    <div class="ui segment">
+                        <div class="ui small header">HTML</div>
+                        <div id="monacoContainerHtml" style="height:600px;"></div>
+                    </div>
+                </div>
+                <div class="eight wide column">
+                    <div class="ui segment">
+                        <div class="ui small header">CSS</div>
+                        <div id="monacoContainerCss" style="height:600px;"></div>
+                    </div>
+                </div>
+                <div class="eight wide column">
+                    <div class="ui segment">
+                        <div class="ui small header">JS</div>
+                        <div id="monacoContainerJs" style="height:600px;"></div>
+                    </div>
+                </div>
+            </div>            
+        </div>
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+    </body>
+</html>

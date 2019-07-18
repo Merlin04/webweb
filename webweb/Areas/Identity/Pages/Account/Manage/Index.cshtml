@@ -1,0 +1,44 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" for="StatusMessage" />
+        <form class="ui form" id="profile-form" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="field">
+                <label asp-for="Username"></label>
+                <input asp-for="Username" class="form-control" disabled />
+            </div>
+            <div class="field">
+                <label asp-for="Input.Email"></label>
+                @if (Model.IsEmailConfirmed)
+                {
+                    <div class="input-group">
+                        <input asp-for="Input.Email" class="form-control" />
+                        <span class="input-group-addon" aria-hidden="true"><i class="checkmark icon"></i></span>
+                    </div>
+                }
+                else
+                {
+                    <div class="ui action input">
+                    <input asp-for="Input.Email" class="form-control" />
+                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="ui button">Send verification email</button>
+                    </div>
+                }
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Input.PhoneNumber"></label>
+                <input asp-for="Input.PhoneNumber" class="form-control" />
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <button id="update-profile-button" type="submit" class="ui button">Save</button>
+        </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

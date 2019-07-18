@@ -1,0 +1,135 @@
+﻿@{
+    Layout = null;
+}
+
+@using Microsoft.AspNetCore.Html;
+@using Microsoft.CodeAnalysis
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@ViewData["PageName"] | @ViewData["SiteName"]</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        @if (!(bool) ViewData["NoMargin"])
+        {
+            <style>
+                body {
+                    margin: 1em;
+                    /*margin-right: 14px;*/
+                }
+            </style>
+        }
+        else
+        {
+            <style>
+                .applymargin {
+                    margin: 1em;
+                }
+            </style>
+        }
+        <style>
+            @(new HtmlString(ViewData["CustomCss"].ToString()))
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            $( document ).ready(function() {
+                $('.dropdown').dropdown();
+            });            
+        </script>
+        @if (!(bool) ViewData["ShowNavbar"])
+        {
+            <script>
+            $( document ).ready(function() {
+                $('#version').on('click', function() {$('#navbarContainer').toggle(200)});
+                document.onkeydown = function(evt) {
+                    evt = evt || window.event;
+                    var isEscape = false;
+                    if ("key" in evt) {
+                        isEscape = (evt.key === "Escape" || evt.key === "Esc");
+                    } else {
+                        isEscape = (evt.keyCode === 27);
+                    }
+                    if (isEscape) {
+                        // Show navigation bar
+                        $('#navbarContainer').toggle(200);
+                    }
+                };
+            });
+            </script>
+        }
+    </head>
+    <body>
+        <!--
+        <div class="ui inverted menu">
+            @if (ViewData["PageName"].ToString() == "Index") {
+            <a href="/" class="active item">
+                Home
+            </a>
+            }
+            else {
+            <a href="/" class="item">
+                Home
+            </a>
+            <a href="/ViewPage/@ViewData["PageName"]" class="active item">
+                @ViewData["PageName"]
+            </a>
+            }
+            <form class="right item" id="navigateForm" action="/Page/NavigateForm" method="post">
+                <div class="ui inverted transparent input">
+                    <input type="text" name="pageName" placeholder="Navigate to...">
+                </div>
+                <button type="submit" class="ui black button">Go</button>
+            </form>
+            <div class="ui inverted dropdown icon item">
+                <i class="wrench icon"></i>
+                <div class="menu">
+                    <a class="item" href="/ViewPage/Special|List of pages">
+                        Special|List of pages
+                    </a>
+                    <a class="item" href="/NewPage">
+                        New Page
+                    </a>
+                    <a class="item" href="/ManageTemplates">
+                        Manage Templates
+                    </a>
+                    <a class="item" href="/ManageFiles">
+                        Manage Files
+                    </a>
+                    <a class="item" href="/Admin/ControlPanel">
+                        Control Panel
+                    </a>
+                    <a class="item" href="/Docs/About">
+                        About @ViewData["SoftwareName"]
+                    </a>
+                    <a class="item" href="/Docs/Syntax">
+                        Syntax Guide
+                    </a>
+                </div>
+            </div>
+        </div>-->
+        @if (!(bool) ViewData["ShowNavbar"])
+        {
+            <div id="navbarContainer" style="display: none" class="applymargin">
+                <partial name="_Navbar"/>
+            </div>
+        }
+        else {
+            <div id="navbarContainer" class="applymargin">
+                <partial name="_Navbar"/>
+            </div>
+        }
+        <div id="customContent">
+            @(new HtmlString(ViewData["CustomHtml"].ToString()))
+        </div>
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text applymargin">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+        <script>@(new HtmlString(ViewData["CustomJs"].ToString()))</script>
+    </body>
+</html>

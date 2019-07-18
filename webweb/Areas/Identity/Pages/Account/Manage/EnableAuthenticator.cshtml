@@ -1,0 +1,50 @@
+﻿@page
+@model EnableAuthenticatorModel
+@{
+    ViewData["Title"] = "Configure authenticator app";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h4>@ViewData["Title"]</h4>
+<div>
+    <p>To use an authenticator app go through the following steps:</p>
+    <ol class="ui list">
+        <li>
+                Download a two-factor authenticator app like Google Authenticator for
+                <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
+                <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>, or use a password manager that supports 2FA codes like Bluink Key.
+        </li>
+        <li>
+            Scan the QR Code or enter <code>@Model.SharedKey</code> into your two-factor authenticator app. Spaces and casing do not matter.
+        </li>
+        <li>
+                Once you have scanned the QR code or entered the key above, your two factor authentication app will provide you
+                with a unique code. Enter the code in the confirmation box below.
+        </li>
+    </ol>
+    <div class="ui segment" style="display:inline-block" id="qrCode"></div>
+    <div id="qrCodeData" data-url="@Html.Raw(@Model.AuthenticatorUri)"></div>
+    <form class="ui form" id="send-code" method="post">
+        <div class="field">
+            <label asp-for="Input.Code" class="control-label">Verification Code</label>
+            <input asp-for="Input.Code" class="form-control" autocomplete="off" />
+            <span asp-validation-for="Input.Code" class="text-danger"></span>
+        </div>
+        <button type="submit" class="ui button">Verify</button>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript" src="~/lib/qrcode.min.js"></script>
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrCode"),
+            {
+                text: "@Html.Raw(Model.AuthenticatorUri)",
+                width: 150,
+                height: 150
+            });
+    </script>
+}

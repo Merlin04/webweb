@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <UserSecretsId>aspnet-webweb-CAFECF7A-767D-4378-8FCF-24D02411CCBF</UserSecretsId>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <None Update="app.db" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlAccess\SqlAccess.csproj" />
+    <ProjectReference Include="..\wwBuildInfo\wwBuildInfo.csproj" />
+    <ProjectReference Include="..\wwFileAccess\wwFileAccess.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Docs\" />
+    <Folder Include="Views\Admin\" />
+    <Folder Include="Views\Page\" />
+    <Folder Include="Classes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Areas\Identity\Pages\Account\_ViewImports.cshtml" />
+  </ItemGroup>
+</Project>

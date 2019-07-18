@@ -1,0 +1,49 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    wwBuildInfo.wwBuildInfo wwbi = new wwBuildInfo.wwBuildInfo();
+    ViewData["SoftwareName"] = wwbi.GetName();
+    ViewData["VersionNumber"] = wwbi.GetVersion();
+    ViewData["ProjectUrl"] = wwbi.GetUrl();
+    ViewData["SiteName"] = wwbi.getSiteSettings()["SiteName"];
+}
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Access denied | @ViewData["SiteName"]</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <style>
+            body {
+                margin: 14px;
+                /*margin-right: 14px;*/
+            }
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            $( document ).ready(function() {
+                $('.dropdown').dropdown();
+            });
+        </script>
+    </head>
+    <body>
+        <partial name="_Navbar" />
+        <div id="customContent">
+            <h1>Access denied</h1>
+            <p>You do not have access to this resource.</p>
+        </div>
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+    </body>
+</html>

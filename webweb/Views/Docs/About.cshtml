@@ -1,0 +1,83 @@
+﻿@{
+    Layout = null;
+}
+
+@using System.Data;
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>About @ViewData["SoftwareName"] | @ViewData["SiteName"]</title>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <style>
+            body {
+                margin: 14px;
+                /*margin-right: 14px;*/
+            }
+        </style>
+        <script>
+            function decodeHtml(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            $( document ).ready(function() {
+                $('.dropdown').dropdown();
+            });
+        </script>
+    </head>
+    <body>
+        <!--<div class="ui inverted menu">
+            <a href="/" class="item">
+                Home
+            </a>
+            <form class="right item" id="navigateForm" action="/Page/NavigateForm" method="post">
+                <div class="ui inverted transparent input">
+                    <input type="text" name="pageName" placeholder="Navigate to...">
+                </div>
+                <button type="submit" class="ui black button">Go</button>
+            </form>
+            <div class="ui inverted dropdown icon item">
+                <i class="wrench icon"></i>
+                <div class="menu">
+                    <a class="item" href="/ViewPage/Special|List of pages">
+                        Special|List of pages
+                    </a>
+                    <a class="item" href="/NewPage">
+                        New Page
+                    </a>
+                    <a class="item" href="/ManageTemplates">
+                        Manage Templates
+                    </a>
+                    <a class="item" href="/ManageFiles">
+                        Manage Files
+                    </a>
+                    <a class="item" href="/Admin/ControlPanel">
+                        Control Panel
+                    </a>
+                    <a class="item" href="/Docs/About">
+                        About @ViewData["SoftwareName"]
+                    </a>
+                    <a class="item" href="/Docs/Syntax">
+                        Syntax Guide
+                    </a>
+                </div>
+            </div>
+        </div>-->
+        <partial name="_Navbar" />
+        <div id="customContent">
+            <img src="/Content/logo.png" class="ui medium image">
+            <div class="ui header">@ViewData["SoftwareName"] @ViewData["VersionNumber"]</div>
+            @ViewData["SoftwareName"] is a <a href="https://en.wikipedia.org/wiki/Content_management_system">content management system</a> that allows you to have the benefits of a traditional content management system but with full control over the HTML. See more at <a href="@ViewData["ProjectUrl"]">@ViewData["ProjectUrl"]</a>.
+        </div>
+        <div class="ui divider"></div>
+        <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+    </body>
+</html>
+
+
+
+
