@@ -26,7 +26,7 @@ namespace webweb.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("ControlPanel");
         }
         public IActionResult ControlPanel()
         {

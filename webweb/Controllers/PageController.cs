@@ -86,7 +86,23 @@ namespace webweb.Controllers
             ViewData["SoftwareName"] = wwbi.GetName();
             ViewData["SiteName"] = getSiteSettings()["SiteName"];
             if (_userManager.Users.ToList().Count < 1) { return RedirectToPage("/Account/Register", new { area = "Identity" }); }
-            return View();
+
+            try
+            {
+                if ((!_signInManager.IsSignedIn(User)) && (ViewData["PageName"].ToString().Substring(0, 6) == "Draft|"))
+                {
+                    return RedirectToAction("ViewPage", "Page", new {id = "Index"});
+                }
+                else
+                {
+                    return View();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Sometimes the string isn't long enough to be substringed
+                return View();
+            }
         }
         public ActionResult NewPage()
         {
