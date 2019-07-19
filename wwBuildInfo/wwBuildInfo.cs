@@ -8,7 +8,7 @@ namespace wwBuildInfo
     {
         public string GetVersion()
         {
-            return "v0.2";
+            return "v0.2.1";
         }
         public string GetName()
         {
