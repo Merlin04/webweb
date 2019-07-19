@@ -4,6 +4,7 @@ A content management system that gives you control over the HTML. It features a 
 1. Clone the repository to your computer.
 2. Edit the `appsettings.json` file located in the `webweb` folder to configure the app. You can either use the local database or modify the connection string to use another database, but it must be SQLite.
 3. Follow [Microsoft's guide](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-2.2) to deploy the app.
+4. If you would like, increase the Nginx file upload size limit to 30M (the default ASP.NET Core size) by following [this guide](https://www.cyberciti.biz/faq/linux-unix-bsd-nginx-413-request-entity-too-large/).
 4. Open your website in a web browser.
 5. There will be an error screen, with a button to "Apply Migrations". Click it, and when it tells you to, refresh the page.
 6. Fill out the form to create your admin account. If the page doesn't redirect you to /ViewPage within a few seconds, click the "Home" button on the navigation bar.
