@@ -121,9 +121,12 @@
         </div>-->
         <partial name="_Navbar" />
         <div id="customContent">
+            <form id="deletePageForm" action="/Page/DeletePageForm" method="post">
+                <input type="hidden" name="pageName" value="@ViewData["PageName"]">
+            </form>
             <form id="editPageForm" action="/Page/EditPageForm" method="post">
                 <div class="ui header">Editing @ViewData["PageName"]<span style="float: right"><a href="/Docs/Syntax">Syntax guide</a></span></div>
-                <button onclick="setSaveAsDraft('Yes'); $('#saveButton').click()" id="saveAsDraftButton" class="ui button">Save as Draft|@ViewData["PageName"]</button><button type="submit" id="saveButton" class="ui button">Save as @ViewData["PageName"]</button>@if (ViewData["ShowUndraftButton"].ToString() == "true") {<button onclick="setSaveAsDraft('Undraft'); $('#saveButton').click()" id="undraftButton" class="ui button">Save and undraft page</button>}
+                <button onclick="setSaveAsDraft('Yes'); $('#saveButton').click()" id="saveAsDraftButton" class="ui button">Save as Draft|@ViewData["PageName"]</button><button type="submit" id="saveButton" class="ui button">Save as @ViewData["PageName"]</button>@if (ViewData["ShowUndraftButton"].ToString() == "true") {<button onclick="setSaveAsDraft('Undraft'); $('#saveButton').click()" id="undraftButton" class="ui button">Save and undraft page</button>}<button class="red ui button" type="submit" form="deletePageForm">Delete @ViewData["PageName"]</button>
                 <input type="hidden" name="HtmlEdit" id="HtmlEdit">
                 <input type="hidden" name="CssEdit" id="CssEdit">
                 <input type="hidden" name="JsEdit" id="JsEdit">

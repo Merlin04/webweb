@@ -55,6 +55,7 @@ namespace webweb.Controllers
   </div>
   <p>Either this page is empty or it does not exist. 
 </p></div>";
+                ViewData["ErrorShown"] = true;
             }
             else
             {
@@ -333,6 +334,20 @@ namespace webweb.Controllers
             }
             sa.NewPage(newPageName, HtmlEdit, CssEdit, JsEdit);
             return RedirectToAction("ViewPage", new { id = newPageName });
+            }
+            else
+            {
+                return RedirectToAction("ViewPage", "Page");
+            }
+        }
+        [HttpPost]
+        public ActionResult DeletePageForm(string pageName)
+        {
+            if (_signInManager.IsSignedIn(User))
+            {
+                SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+                sa.DeletePage(pageName);
+                return RedirectToAction("ViewPage", new { id = "Index" });
             }
             else
             {

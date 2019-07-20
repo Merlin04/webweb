@@ -1,6 +1,17 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@{
+    try
+    {
+        bool i = (bool) ViewData["ErrorShown"];
+    }
+    catch
+    {
+        ViewData["ErrorShown"] = false;
+    }
+}
+
 
 <!-- Regular menu -->
 <div class="ui inverted menu" id="desktopMenu">
@@ -11,7 +22,7 @@
             <a href="/" class="active item">
                 Home
             </a>
-            if (SignInManager.IsSignedIn(User))
+            if (SignInManager.IsSignedIn(User) && !(bool)ViewData["ErrorShown"])
             {
                 <a href="/EditPage/@ViewData["PageName"]" class="item">
                     Edit Page
@@ -26,7 +37,7 @@
             <a href="/ViewPage/@ViewData["PageName"]" class="active item">
                 @ViewData["PageName"]
             </a>
-            if (SignInManager.IsSignedIn(User))
+            if (SignInManager.IsSignedIn(User) && !(bool)ViewData["ErrorShown"])
             {
                 <a href="/EditPage/@ViewData["PageName"]" class="item">
                     Edit Page
@@ -138,9 +149,12 @@
         </div>
         <div class="content" style="padding-bottom: 21px;">
             <div class="ui stackable inverted menu">
-                <a href="/EditPage/@ViewData["PageName"]" class="item">
-                    Edit Page
-                </a>
+                @if (!(bool) ViewData["ErrorShown"])
+                {
+                    <a href="/EditPage/@ViewData["PageName"]" class="item">
+                        Edit Page
+                    </a>
+                }
                 <a class="right item" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage Account</a>
                 <a class="item" href="#" onclick="$('#logoutButton').click();">
                     Logout
