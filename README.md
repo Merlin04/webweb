@@ -1,5 +1,5 @@
 # webweb
-A content management system that gives you control over the HTML. It features a full code editor (using Monaco), a page template system, a file management page, and a custom markup syntax to make writing pages easier and faster.
+A content management system that gives you control over the HTML. It features a full browser-based code editor (using Monaco), a page template system, a file management page, and a custom markup syntax to make writing pages easier and faster.
 ## Install guide
 1. Clone the repository to your computer.
 2. Edit the `appsettings.json` file located in the `webweb` folder to configure the app. You can either use the local database or modify the connection string to use another database, but it must be SQLite.
