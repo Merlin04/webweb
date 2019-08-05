@@ -149,12 +149,16 @@
         </div>
         <div class="content" style="padding-bottom: 21px;">
             <div class="ui stackable inverted menu">
-                @if (!(bool) ViewData["ErrorShown"])
+                @try
                 {
-                    <a href="/EditPage/@ViewData["PageName"]" class="item">
-                        Edit Page
-                    </a>
+                    if (!(bool) ViewData["ErrorShown"] && ViewData["PageName"].ToString().Length > 0)
+                    {
+                        <a href="/EditPage/@ViewData["PageName"]" class="item">
+                            Edit Page
+                        </a>
+                    }
                 }
+                catch {}
                 <a class="right item" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage Account</a>
                 <a class="item" href="#" onclick="$('#logoutButton').click();">
                     Logout

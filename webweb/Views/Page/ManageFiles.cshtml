@@ -11,6 +11,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
         <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <!-- DataTables -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" charset="utf8" src="~/lib/dataTables.semanticui.js"></script>
         <style>
             body {
                 margin: 14px;
@@ -18,6 +22,9 @@
             }
             .ui.file.input {
                 display: none;
+            }
+            #filesTable {
+                border: 1px solid rgba(34,36,38,.15);
             }
         </style>
         <script>
@@ -28,8 +35,12 @@
             }
             $( document ).ready(function() {
                 $('.dropdown').dropdown();
-                $('.popuptrigger').popup({
-                    on: 'click'
+                $('#filesTable').DataTable({
+                    "initComplete": function(settings, json) {
+                        $('.popuptrigger').popup({
+                            on: 'click'
+                        });
+                    }
                 });
             });
         </script>
@@ -83,13 +94,21 @@
                 <div class="header">
                     File moved to garbage
                 </div>
-                <p>Your file has been moved to /Content/garbage/, to fully delete it go to your control panel and click "Empty garbage." To restore your file, click "Restore garbage".</p>
+                <p>Your file has been moved to /Content/garbage/, to fully delete it go to your control panel and click "Empty garbage."</p>
             </div>
             }
-            <table class="ui celled table">
+            <form id="uploadFileForm" action="/Page/UploadFile" method="post" enctype="multipart/form-data">
+                <label for="postedFiles" class="ui labeled icon button">
+                    <i class="file icon"></i>
+                    Upload files
+                </label>
+                <input type="file" multiple id="postedFiles" name="postedFiles" class="ui file input" onchange="form.submit()">
+            </form>
+            <br/>
+            <table class="ui celled table" id="filesTable">
                 <thead><tr>
                         <th>Path</th>
-                        <th>Actions</th>
+                        <th class="collapsing">Actions</th>
                 </tr></thead>
                 <tbody>
                     @{
@@ -100,7 +119,7 @@
                     {
                     <tr>
                         <td>@oneFile</td>
-                        <td>
+                        <td style="display:flex;">
                             <div class="popuptrigger ui animated yellow icon button">
                                 <div class="visible content">
                                     <i class="angle right icon"></i>
@@ -123,13 +142,6 @@
                     }
                 </tbody>
             </table>
-            <form id="uploadFileForm" action="/Page/UploadFile" method="post" enctype="multipart/form-data">
-                <label for="postedFile" class="ui labeled icon button">
-                    <i class="file icon"></i>
-                    Upload a file
-                </label>
-                <input type="file" id="postedFile" name="postedFile" class="ui file input" onchange="form.submit()">
-            </form>
         </div>
         <div class="ui divider"></div>
         <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>

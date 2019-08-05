@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using webweb.Models;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http.Internal;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -389,13 +390,14 @@ namespace webweb.Controllers
             return RedirectToAction("ViewPage", new { id = pageName });
         }
         [HttpPost]
-        public async Task<ActionResult> UploadFile(IFormFile postedFile)
+        public async Task<IActionResult> UploadFile(List<IFormFile> postedFiles)
         {
             if (_signInManager.IsSignedIn(User))
             { 
             wwFileAccess.wwFileAccess wwfi = new wwFileAccess.wwFileAccess();
-            if (postedFile != null)
+            foreach (var postedFile in postedFiles)
             {
+                if (postedFile == null) continue;
                 string path = wwfi.MapPath("~/wwwroot/Content/resources/");
                 if (!Directory.Exists(path))
                 {
