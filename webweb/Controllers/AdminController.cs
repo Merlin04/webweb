@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,23 +21,29 @@ namespace webweb.Controllers
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IEmailSender _emailSender;
-        public AdminController(SignInManager<IdentityUser> signInManager, IEmailSender emailSender)
+        private readonly IApplicationLifetime _applicationLifetime;
+        public AdminController(SignInManager<IdentityUser> signInManager, IEmailSender emailSender, IApplicationLifetime applicationLifetime)
         {
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _applicationLifetime = applicationLifetime;
         }
         // GET: /<controller>/
         public IActionResult Index()
         {
             return RedirectToAction("ControlPanel");
         }
-        public IActionResult ControlPanel()
+        public IActionResult ControlPanel(string restart)
         {
             wwBuildInfo.wwBuildInfo wwbi = new wwBuildInfo.wwBuildInfo();
+            wwFileAccess.wwFileAccess wwfi = new wwFileAccess.wwFileAccess();
             ViewData["SoftwareName"] = wwbi.GetName();
             ViewData["VersionNumber"] = wwbi.GetVersion();
             ViewData["ProjectUrl"] = wwbi.GetUrl();
             ViewData["SiteName"] = wwbi.getSiteSettings()["SiteName"];
+            ViewData["RestartShow"] = (restart == "yes");
+            ViewData["AppSettingsJson"] = System.IO.File.ReadAllText(wwfi.MapPath("~/appsettings.json"));
+            //ViewData["AppSettingsJson"] = wwfi.MapPath("~/appsettings.json");
             if(_signInManager.IsSignedIn(User)) {
                 return View();
             }
@@ -77,6 +86,58 @@ namespace webweb.Controllers
             return RedirectToAction("ControlPanel");
         }
         
+        [HttpPost]
+        public async Task<IActionResult> UploadFavicon(IFormFile postedFile)
+        {
+            if (_signInManager.IsSignedIn(User))
+            { 
+                wwFileAccess.wwFileAccess wwfi = new wwFileAccess.wwFileAccess();
+                if (postedFile != null)
+                {
+                    string path = wwfi.MapPath("~/wwwroot/");
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+
+                    if (postedFile.Length > 0)
+                    {
+                        var filePath = Path.Combine(path, "favicon.ico");
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await postedFile.CopyToAsync(fileStream);
+                        }
+                    }
+                }
+                return RedirectToAction("ControlPanel");
+            }
+            else
+            {
+                return RedirectToAction("ViewPage", "Page");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult EditAppSettings(string newValue)
+        {
+            if (_signInManager.IsSignedIn(User))
+            {
+                wwFileAccess.wwFileAccess wwfi = new wwFileAccess.wwFileAccess();
+                // Edit the config file
+                using (StreamWriter sw = System.IO.File.CreateText(wwfi.MapPath("~/appsettings.json")))
+                {
+                    sw.Write(newValue);
+                }
+                // Stop the app, systemd will restart it
+                Task.Delay(5000).ContinueWith(t => _applicationLifetime.StopApplication()); // Wait a bit so that the IActionResult can be returned before the application stops itself
+                return RedirectToAction("ControlPanel", new { restart = "yes" });
+            }
+            else
+            {
+                return RedirectToAction("ViewPage", "Page");
+            }
+        }
+
         static string RandomString(int length)
         {
             const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";

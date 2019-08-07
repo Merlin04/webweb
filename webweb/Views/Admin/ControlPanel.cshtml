@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Html
+@{
     Layout = null;
 }
 
@@ -11,10 +12,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
         <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+        <script src="/Content/monaco-editor/min/vs/loader.js"></script>
         <style>
             body {
                 margin: 14px;
                 /*margin-right: 14px;*/
+            }
+            .ui.file.input {
+                display: none;
+            }
+            .ui.modal > .content {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .ui.modal > .content > div:last-child {
+                flex: 1;
             }
         </style>
         <script>
@@ -29,77 +42,110 @@
         </script>
     </head>
     <body>
-        <!--<div class="ui inverted menu">
-            <a href="/" class="item">
-                Home
-            </a>
-            <form class="right item" id="navigateForm" action="/Page/NavigateForm" method="post">
-                <div class="ui inverted transparent input">
-                    <input type="text" name="pageName" placeholder="Navigate to...">
-                </div>
-                <button type="submit" class="ui black button">Go</button>
-            </form>
-            <div class="ui inverted dropdown icon item">
-                <i class="wrench icon"></i>
-                <div class="menu">
-                    <a class="item" href="/ViewPage/Special|List of pages">
-                        Special|List of pages
-                    </a>
-                    <a class="item" href="/NewPage">
-                        New Page
-                    </a>
-                    <a class="item" href="/ManageTemplates">
-                        Manage Templates
-                    </a>
-                    <a class="item" href="/ManageFiles">
-                        Manage Files
-                    </a>
-                    <a class="item" href="/Admin/ControlPanel">
-                        Control Panel
-                    </a>
-                    <a class="item" href="/Docs/About">
-                        About @ViewData["SoftwareName"]
-                    </a>
-                    <a class="item" href="/Docs/Syntax">
-                        Syntax Guide
-                    </a>
-                </div>
-            </div>
-        </div>-->
+        <script>
+            var editor;
+            function openAppSettingsEditor() {
+                $('.overlay.fullscreen.modal').modal('setting', {
+                    onDeny: function() {
+                        editor.dispose();
+                    }
+                }).modal('show');
+                require.config({ paths: { 'vs': '/Content/monaco-editor/min/vs' } });
+                require(['vs/editor/editor.main'], function () {
+                    editor = monaco.editor.create(document.getElementById('monacoContainerAppSettings'), {
+                        value: decodeHtml("@ViewData["AppSettingsJson"]"),
+                        language: 'json'
+                    });
+                });
+            }
+            $(document).ready(function () {
+                $('#editAppSettings').submit(function (event) {
+                    $('#newValue').val(editor.getValue());
+                    return true; // return false to cancel form action
+                });
+            });
+        </script>
         <partial name="_Navbar" />
         <div id="customContent">
             <div class="ui header">
                 Control Panel
             </div>
-            <div class="ui small header">
-                Empty Garbage
-            </div>
-            <p>This will delete all files in the folder <code>/Content/garbage</code>. Please make sure you don't need any of those files before deleting them.</p>
-            <form action="/Admin/ClearGarbageForm" method="post">
-                <button type="submit" class="red ui button">Empty Garbage</button>
-            </form>
-            <div class="ui small header">
-                Register New User
-            </div>
-            <p>Type in the email address of the person who you want to register. They will get an email with a link to allow them to access the register page.</p>
-            <form class="ui form" id="registerUserForm" action="/Admin/RegisterUserForm" method="post">
-                <div class="ui field">
-                    <label>Email</label>
-                    <input type="email" name="registerEmail" placeholder="user@example.com" />
+            @if ((bool) ViewData["RestartShow"]) {
+                <div class="ui message">
+                    <div class="header">
+                        Restarting @ViewData["SoftwareName"]...
+                    </div>
+                    <p>Please wait for the process to restart. </p>
                 </div>
-                <button type="submit" class="ui button">Send email</button>
-            </form>
-            <div class="ui small header">
-                Other settings
+            }
+            <div class="ui compact segment">
+                <div class="ui small header">
+                    Empty Garbage
+                </div>
+                <p>This will delete all files in the folder <code>/Content/garbage</code>. Please make sure you don't need any of those files before deleting them.</p>
+                <form action="/Admin/ClearGarbageForm" method="post">
+                    <button type="submit" class="red ui button">Empty Garbage</button>
+                </form>
             </div>
-            <p>There are other settings in the <code>appsettings.json</code> file in the "webweb" folder on the server.</p>
+            <div class="ui compact segment">
+                <div class="ui small header">
+                    Register New User
+                </div>
+                <p>Type in the email address of the person who you want to register. They will get an email with a link to allow them to access the register page.</p>
+                <form class="ui form" id="registerUserForm" action="/Admin/RegisterUserForm" method="post">
+                    <div class="ui field">
+                        <label>Email</label>
+                        <input type="email" name="registerEmail" placeholder="user@example.com"/>
+                    </div>
+                    <button type="submit" class="ui button">Send email</button>
+                </form>
+            </div>
+            <div class="ui compact segment">
+                <div class="ui small header">
+                    Change favicon
+                </div>
+                <p>Current favicon:</p>
+                <img class="ui image" src="/favicon.ico" alt="Current favicon"/>
+                <br/>
+                <form id="uploadFaviconForm" action="/Admin/UploadFavicon" method="post" enctype="multipart/form-data">
+                    <label for="postedFile" class="ui labeled icon button">
+                        <i class="file icon"></i>
+                        Upload favicon
+                    </label>
+                    <input type="file" id="postedFile" name="postedFile" class="ui file input" onchange="form.submit()">
+                </form>
+            </div>
+            <div class="ui compact segment">
+                <div class="ui small header">
+                    Other settings
+                </div>
+                <p>There are other settings in the <code>appsettings.json</code> file in the "webweb" folder on the server.</p>
+                <div onclick="openAppSettingsEditor()" class="ui labeled icon button"><i class="code icon"></i>Launch editor</div>
+            </div>
         </div>
         <div class="ui divider"></div>
         <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
-        <form id="deleteFile" action="/Page/GarbageFile" method="post">
-            <input type="hidden" name="filePath" id="filePath">
-            <button type="submit" style="display:none" id="deleteFileSubmit"></button>
+        <form id="editAppSettings" action="/Admin/EditAppSettings" method="post">
+            <input type="hidden" name="newValue" id="newValue" />
         </form>
+        <div class="ui overlay fullscreen modal" style="display:none">
+            <div class="header">
+                Editing appsettings.json
+            </div>
+            <div class="content">
+                <div class="ui warning message">
+                    <div class="header">
+                        Be careful
+                    </div>
+                    Modifying some of these values can break @ViewData["SoftwareName"]. Please be sure you want to change a value before clicking "Save".
+                </div>
+                <div id="monacoContainerAppSettings"></div>
+            </div>
+            <div class="actions">
+                <button type="submit" form="editAppSettings" class="ui approve button">Save and restart @ViewData["SoftwareName"]</button>
+                <div class="ui cancel button">Cancel</div>
+              </div>
+        </div>
     </body>
 </html>
 
