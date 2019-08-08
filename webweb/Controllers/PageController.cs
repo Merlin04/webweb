@@ -84,6 +84,7 @@ namespace webweb.Controllers
             }
             ViewData["CustomCss"] = pageData[1];
             ViewData["CustomJs"] = pageData[2];
+            ViewData["CustomHead"] = pageData[3];
             ViewData["VersionNumber"] = wwbi.GetVersion();
             ViewData["SoftwareName"] = wwbi.GetName();
             ViewData["SiteName"] = getSiteSettings()["SiteName"];
@@ -168,13 +169,14 @@ namespace webweb.Controllers
             ViewData["PageName"] = ((fixNameCaps == "") ? id : fixNameCaps);
             //ViewData["CustomHtml"] = "<div class='ui label'>Testing html \" ` ` \" chars</div>";
             string[] pageContents = sa.GetPageByName(id);
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 pageContents[i] = pageContents[i].Replace("\n", "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r");
             }
             ViewData["HtmlEdit"] = pageContents[0];
             ViewData["CssEdit"] = pageContents[1];
             ViewData["JsEdit"] = pageContents[2];
+            ViewData["HeadEdit"] = pageContents[3];
             try
             {
                 ViewData["ShowUndraftButton"] = (ViewData["PageName"].ToString().Substring(0, 6) == "Draft|") ? "true" : "false";
@@ -229,14 +231,15 @@ namespace webweb.Controllers
             ViewData["TemplateId"] = id;
             //ViewData["CustomHtml"] = "<div class='ui label'>Testing html \" ` ` \" chars</div>";
             DataRow pageContentsDR = sa.GetTemplateById(id).Tables[0].Rows[0];
-            string[] pageContents = { pageContentsDR["contents_html"].ToString(), pageContentsDR["contents_css"].ToString(), pageContentsDR["contents_js"].ToString() };
-            for (int i = 0; i < 3; i++)
+            string[] pageContents = { pageContentsDR["contents_html"].ToString(), pageContentsDR["contents_css"].ToString(), pageContentsDR["contents_js"].ToString(), pageContentsDR["contents_head"].ToString() };
+            for (int i = 0; i < 4; i++)
             {
                 pageContents[i] = pageContents[i].Replace("\n", "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r");
             }
             ViewData["HtmlEdit"] = pageContents[0];
             ViewData["CssEdit"] = pageContents[1];
             ViewData["JsEdit"] = pageContents[2];
+            ViewData["HeadEdit"] = pageContents[3];
             ViewData["TemplateDesc"] = pageContentsDR["description"];
             ViewData["VersionNumber"] = wwbi.GetVersion();
             ViewData["SoftwareName"] = wwbi.GetName();
@@ -276,7 +279,7 @@ namespace webweb.Controllers
             // Create the new page
             DataSet selectedTemplate = sa.GetTemplateByName(template);
             DataRow dR = selectedTemplate.Tables[0].Rows[0];
-            sa.NewPage(newPageName, dR["contents_html"].ToString(), dR["contents_css"].ToString(), dR["contents_js"].ToString());
+            sa.NewPage(newPageName, dR["contents_html"].ToString(), dR["contents_css"].ToString(), dR["contents_js"].ToString(), dR["contents_head"].ToString());
             // Send to the page
             return RedirectToAction("EditPage", new { id = newPageName });
             }
@@ -318,7 +321,7 @@ namespace webweb.Controllers
         }
         //[ValidateInput(false)]
         [HttpPost]
-        public ActionResult EditPageForm(string pageName, string HtmlEdit, string CssEdit, string JsEdit, string saveAsDraft)
+        public ActionResult EditPageForm(string pageName, string HtmlEdit, string CssEdit, string JsEdit, string HeadEdit, string saveAsDraft)
         {
             if (_signInManager.IsSignedIn(User))
             {
@@ -333,7 +336,7 @@ namespace webweb.Controllers
                 newPageName = pageName.Substring(6);
                 sa.DeletePage(pageName);
             }
-            sa.NewPage(newPageName, HtmlEdit, CssEdit, JsEdit);
+            sa.NewPage(newPageName, HtmlEdit, CssEdit, JsEdit, HeadEdit);
             return RedirectToAction("ViewPage", new { id = newPageName });
             }
             else
@@ -357,12 +360,12 @@ namespace webweb.Controllers
         }
         //[ValidateInput(false)]
         [HttpPost]
-        public ActionResult EditTemplateForm(string templateName, string templateDesc, string HtmlEdit, string CssEdit, string JsEdit, string templateId)
+        public ActionResult EditTemplateForm(string templateName, string templateDesc, string HtmlEdit, string CssEdit, string JsEdit, string HeadEdit, string templateId)
         {
             if (_signInManager.IsSignedIn(User))
             {
             SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
-            sa.EditTemplate(templateId, templateName, templateDesc, HtmlEdit, CssEdit, JsEdit);
+            sa.EditTemplate(templateId, templateName, templateDesc, HtmlEdit, CssEdit, JsEdit, HeadEdit);
             return RedirectToAction("ManageTemplates");
             }
             else

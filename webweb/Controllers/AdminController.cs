@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Text.Encodings.Web;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -131,6 +133,45 @@ namespace webweb.Controllers
                 // Stop the app, systemd will restart it
                 Task.Delay(5000).ContinueWith(t => _applicationLifetime.StopApplication()); // Wait a bit so that the IActionResult can be returned before the application stops itself
                 return RedirectToAction("ControlPanel", new { restart = "yes" });
+            }
+            else
+            {
+                return RedirectToAction("ViewPage", "Page");
+            }
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RunSqlQuery(string query)
+        {
+            if (_signInManager.IsSignedIn(User))
+            {
+                SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+                DataSet qe = sa.RunSqlQuery(query);
+                string jsonString;
+                // Turn the DataSet into a json object
+                try
+                {
+                    jsonString = JsonConvert.SerializeObject(qe.Tables[0]);
+                }
+                catch(Exception ex)
+                {
+                    if (ex.Message == "Cannot find table 0.")
+                    {
+                        //jsonString = "{\"Status\": \"The command completed successfully.\"}";
+                        DataTable dataTable = new DataTable();
+                        dataTable.Columns.Add("Status");
+                        DataRow dataRow = dataTable.NewRow();
+                        dataRow["Status"] = "The command completed successfully.";
+                        dataTable.Rows.Add(dataRow);
+                        jsonString = JsonConvert.SerializeObject(dataTable);
+                    }
+                    else
+                    {
+                        throw ex;
+                    }
+                }
+                return Json(jsonString);
             }
             else
             {

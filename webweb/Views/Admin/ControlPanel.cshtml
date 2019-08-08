@@ -21,31 +21,108 @@
             .ui.file.input {
                 display: none;
             }
-            .ui.modal > .content {
+            .json.ui.modal > .content {
                 display: flex;
                 flex-direction: column;
             }
             
-            .ui.modal > .content > div:last-child {
+            .json.ui.modal > .content > div:last-child {
                 flex: 1;
+            }
+            
+            .sql.ui.modal > .content {
+                display: flex;
+                flex-direction: column;
+            }
+                        
+            .sql.ui.modal > .content > #sqlconsole {
+                flex: 1 1 1px;
+                overflow: auto;
             }
         </style>
         <script>
+            var numberOfTablesAppended = 0;
+        
             function decodeHtml(html) {
                 var txt = document.createElement("textarea");
                 txt.innerHTML = html;
                 return txt.value;
             }
+            function encodeHtml(input) {
+                return $('<span>').text(input).html();
+            }
             $( document ).ready(function() {
                 $('.dropdown').dropdown();
             });
+            
+            // Builds the HTML Table out of myList.
+            function buildHtmlTable(selector, inputList) {
+                var columns = addAllColumnHeaders(inputList, selector);
+                for (var i = 0; i < inputList.length; i++) {
+                    var row$ = $('<tr/>');
+                    for (var colIndex = 0; colIndex < columns.length; colIndex++) {
+                        var cellValue = inputList[i][columns[colIndex]];
+                        if (cellValue == null) cellValue = "";
+                        row$.append($('<td/>').html(encodeHtml(cellValue)));
+                    }
+                    $(selector).append(row$);
+                }
+            }
+            
+            // Adds a header row to the table and returns the set of columns.
+            // Need to do union of keys from all records as some records may not contain
+            // all records.
+            function addAllColumnHeaders(myList, selector) {
+                var columnSet = [];
+                var headerTr$ = $('<tr/>');
+                for (var i = 0; i < myList.length; i++) {
+                    var rowHash = myList[i];
+                    for (var key in rowHash) {
+                        if ($.inArray(key, columnSet) == -1) {
+                            columnSet.push(key);
+                            headerTr$.append($('<th/>').html(encodeHtml(key)));
+                        }
+                    }
+                }
+                $(selector).append($('<thead></thead>').append(headerTr$));
+                return columnSet;
+            }
+            
+            function submitSQLQuery() {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                var myData = { query: $('#sqlquery').val() };
+                var dataWithAntiforgeryToken = $.extend(myData, { '__RequestVerificationToken': token });
+                
+                $.ajax({
+                    url: "/Admin/RunSqlQuery",
+                    type: "POST",
+                    data: dataWithAntiforgeryToken,
+                    success: function(data) {
+                        var jsonData = JSON.parse(data);
+                        //$('#sqlconsole').append($(buildHtmlTable(jsonData)));
+                        $('#sqlconsole').append($('<code id=SQLQuery' + numberOfTablesAppended + '>' + encodeHtml('> ' + $('#sqlquery').val()) + '</code>'));
+                        $('#sqlconsole').append($('<table class="ui celled table" id="SQLTable' + numberOfTablesAppended + '"></table>'));
+                        buildHtmlTable('#SQLTable' + numberOfTablesAppended, jsonData);
+                        if(numberOfTablesAppended > 0) {
+                            document.getElementById('SQLQuery' + numberOfTablesAppended).scrollIntoView();
+                        }
+                        $('#sqlquery').val("");
+                        numberOfTablesAppended = numberOfTablesAppended + 1;
+                        //$('#sqlconsole').text(data);
+                    },
+                    error: function() {
+                        alert("Error running SQL query.");
+                    }
+                });
+            }
         </script>
     </head>
     <body>
         <script>
             var editor;
+            var evAdded = false;
             function openAppSettingsEditor() {
-                $('.overlay.fullscreen.modal').modal('setting', {
+                $('.json.overlay.fullscreen.modal').modal('setting', {
                     onDeny: function() {
                         editor.dispose();
                     }
@@ -57,6 +134,25 @@
                         language: 'json'
                     });
                 });
+            }
+            function openSQLConsole() {
+                $('.sql.overlay.fullscreen.modal').modal('show');
+                // Get the input field
+                var input = document.getElementById("sqlquery");
+                
+                // Execute a function when the user releases a key on the keyboard
+                if(!evAdded) {
+                    input.addEventListener("keyup", function(event) {
+                      // Number 13 is the "Enter" key on the keyboard
+                      if (event.keyCode === 13) {
+                        // Cancel the default action, if needed
+                        event.preventDefault();
+                        // Trigger the button element with a click
+                        document.getElementById("sqlsubmit").click();
+                      }
+                    });
+                    evAdded = true;
+                }
             }
             $(document).ready(function () {
                 $('#editAppSettings').submit(function (event) {
@@ -117,6 +213,13 @@
             </div>
             <div class="ui compact segment">
                 <div class="ui small header">
+                    SQL console
+                </div>
+                <p>Open a SQL console to send commands directly to the database and see the response.</p>
+                <div onclick="openSQLConsole()" class="ui button">Launch SQL console</div>
+            </div>
+            <div class="ui compact segment">
+                <div class="ui small header">
                     Other settings
                 </div>
                 <p>There are other settings in the <code>appsettings.json</code> file in the "webweb" folder on the server.</p>
@@ -128,7 +231,7 @@
         <form id="editAppSettings" action="/Admin/EditAppSettings" method="post">
             <input type="hidden" name="newValue" id="newValue" />
         </form>
-        <div class="ui overlay fullscreen modal" style="display:none">
+        <div class="json ui overlay fullscreen modal">
             <div class="header">
                 Editing appsettings.json
             </div>
@@ -145,6 +248,31 @@
                 <button type="submit" form="editAppSettings" class="ui approve button">Save and restart @ViewData["SoftwareName"]</button>
                 <div class="ui cancel button">Cancel</div>
               </div>
+        </div>
+        <div class="sql ui overlay fullscreen modal">
+            <div class="header">
+                SQL console
+            </div>
+            <div class="content">
+                <div class="ui warning message">
+                    <div class="header">
+                        Be careful
+                    </div>
+                    You can break the app by modifying some of the tables. 
+                </div>
+                <div class="ui top attached segment" id="sqlconsole">
+                </div>
+                <div class="ui bottom attached segment" id="sqlinput">
+                    <div class="ui fluid action input">
+                        @Html.AntiForgeryToken()
+                        <input id="sqlquery" type="text" placeholder="Enter SQL query...">
+                        <button id="sqlsubmit" class="ui button" onclick="submitSQLQuery()">Submit</button>
+                    </div>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui approve button">Close</div>
+            </div>
         </div>
     </body>
 </html>

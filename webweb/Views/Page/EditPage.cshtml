@@ -19,6 +19,13 @@
                 margin: 14px;
                 /*margin-right: 14px;*/
             }
+            .ui.modal > .content {
+                display: flex;
+                flex-direction: column;
+            }
+            .ui.modal > .content > div:last-child {
+                flex: 1;
+            }
         </style>
         <script>
             function decodeHtml(html) {
@@ -43,6 +50,8 @@
             var editor;
             var editor2;
             var editor3;
+            var editor4;
+            var e4v = decodeHtml("@ViewData["HeadEdit"]");
             require(['vs/editor/editor.main'], function() {
                 editor = monaco.editor.create(document.getElementById('monacoContainerHtml'), {
                     value: decodeHtml("@ViewData["HtmlEdit"]"),
@@ -61,65 +70,37 @@
                     language: 'javascript'
                 });
             });
+            function e4open() {
+                $('.ui.modal').modal('setting', {
+                    onHide: () => e4close(),
+                }).modal('show');
+                require(['vs/editor/editor.main'], function() {
+                    editor4 = monaco.editor.create(document.getElementById('monacoContainerHead'), {
+                        value: e4v,
+                        language: 'html'
+                    })
+                });
+            }
+            function e4close() {
+                e4v = editor4.getValue();
+                editor4.dispose();
+            }
             $(document).ready(function() {
                 $('#editPageForm').submit(function(event) {
                     $('#saveAsDraft').val(saveAsDraft);
                     $('#HtmlEdit').val(editor.getValue());
                     $('#CssEdit').val(editor2.getValue());
                     $('#JsEdit').val(editor3.getValue());
+                    $('#HeadEdit').val(e4v);
+                    $('.ui.modal').modal('setting', {
+                        onHide: () => e4close(),
+                    });
                     //alert($('#saveAsDraft').val());
                     return true; // return false to cancel form action
                 });
                 $('.dropdown').dropdown();
             });
         </script>
-        <!--<div class="ui inverted menu">
-            @if (ViewData["PageName"].ToString() == "Index") {
-            <a href="/" class="active item">
-                Home
-            </a>
-            }
-            else {
-            <a href="/" class="item">
-                Home
-            </a>
-            <a href="/ViewPage/@ViewData["PageName"]" class="active item">
-                @ViewData["PageName"]
-            </a>
-            }
-            <form class="right item" id="navigateForm" action="/Page/NavigateForm" method="post">
-                <div class="ui inverted transparent input">
-                    <input type="text" name="pageName" placeholder="Navigate to...">
-                </div>
-                <button type="submit" class="ui black button">Go</button>
-            </form>
-            <div class="ui inverted dropdown icon item">
-                <i class="wrench icon"></i>
-                <div class="menu">
-                    <a class="item" href="/ViewPage/Special|List of pages">
-                        Special|List of pages
-                    </a>
-                    <a class="item" href="/NewPage">
-                        New Page
-                    </a>
-                    <a class="item" href="/ManageTemplates">
-                        Manage Templates
-                    </a>
-                    <a class="item" href="/ManageFiles">
-                        Manage Files
-                    </a>
-                    <a class="item" href="/Admin/ControlPanel">
-                        Control Panel
-                    </a>
-                    <a class="item" href="/Docs/About">
-                        About @ViewData["SoftwareName"]
-                    </a>
-                    <a class="item" href="/Docs/Syntax">
-                        Syntax Guide
-                    </a>
-                </div>
-            </div>
-        </div>-->
         <partial name="_Navbar" />
         <div id="customContent">
             <form id="deletePageForm" action="/Page/DeletePageForm" method="post">
@@ -128,19 +109,15 @@
             <form id="editPageForm" action="/Page/EditPageForm" method="post">
                 <div class="ui header">Editing @ViewData["PageName"]<span style="float: right"><a href="/Docs/Syntax">Syntax guide</a></span></div>
                 <button onclick="setSaveAsDraft('Yes'); $('#saveButton').click()" id="saveAsDraftButton" class="ui button">Save as Draft|@ViewData["PageName"]</button><button type="submit" id="saveButton" class="ui button">Save as @ViewData["PageName"]</button>@if (ViewData["ShowUndraftButton"].ToString() == "true") {<button onclick="setSaveAsDraft('Undraft'); $('#saveButton').click()" id="undraftButton" class="ui button">Save and undraft page</button>}<button class="red ui button" type="submit" form="deletePageForm">Delete @ViewData["PageName"]</button>
+                <div style="float: right" onclick="e4open()" class="ui button">Edit <code>head</code> code</div>
                 <input type="hidden" name="HtmlEdit" id="HtmlEdit">
                 <input type="hidden" name="CssEdit" id="CssEdit">
                 <input type="hidden" name="JsEdit" id="JsEdit">
+                <input type="hidden" name="HeadEdit" id="HeadEdit">
                 <input type="hidden" name="saveAsDraft" id="saveAsDraft">
                 <input type="hidden" name="pageName" value="@ViewData["PageName"]">
             </form>
             <br><br>
-            <!--<div class="ui form">
-                <div class="ui input">
-                    <label>Text</label>
-                    @Html.TextArea("HtmlEdit", new {rows="6", cols="50"})
-                </div>
-            </div>-->
             <div class="ui grid">
                 <div class="sixteen wide column">
                     <div class="ui segment">
@@ -164,5 +141,16 @@
         </div>
         <div class="ui divider"></div>
         <span id="version" class="ui small grey text">Powered by @ViewData["SoftwareName"] @ViewData["VersionNumber"]</span>
+        <div class="ui modal">
+            <div class="header">
+                Edit <code>head</code> code
+            </div>
+            <div class="content" style="height:50vh">
+                <div id="monacoContainerHead"></div>
+            </div>
+            <div class="actions">
+                <div class="ui approve button">Close</div>
+            </div>
+        </div>
     </body>
 </html>
