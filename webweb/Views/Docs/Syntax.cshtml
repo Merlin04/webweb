@@ -71,6 +71,12 @@
             </div>
             <p>To make the content of the page look nicer, @ViewData["SoftwareName"] automatically applies a margin of <code>1em</code> to the <code>&lt;body&gt;</code> element. You can disable this by typing <code>{{NOMARGIN}}</code>, similar to how you would use <code>{{HIDENAVBAR}}</code>.</p>
             <div class="ui small header">
+                HTTP Basic Authentication
+            </div>
+            <p>In some cases, you may wish to hide the contents of a page from the general public, only letting certain people access it. The <code>USEAUTH</code> feature can help with this. Use it like this:</p>
+            <code>{{USEAUTH:username|password}}</code>
+            <p style="margin-top: 1em">This will make a page accessible only if a correct username and password pair is entered (you can have multiple <code>USEAUTH</code>s in a page). Be aware that this is not very secure; it hard-codes passwords in the database, and if the password is shared, it will be pointless. You may wish to use a draft page and let the trusted individuals create their own account with 2FA enabled; however this will also grant them full access to the administrative features.</p>
+            <div class="ui small header">
                 Structure of document
             </div>
             <p>When applying styles to the document, you should apply them to the element that contains the custom HTML, not the <code>&lt;body&gt;</code> element. If you apply styles to the <code>&lt;body&gt;</code> element, the navbar will also be affected.</p>

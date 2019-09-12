@@ -33,57 +33,20 @@
                 txt.innerHTML = html;
                 return txt.value;
             }
+            function tableRedrawn() {
+                $('.popuptrigger').popup({
+                    on: 'click'
+                });
+            }
             $( document ).ready(function() {
                 $('.dropdown').dropdown();
-                $('#filesTable').DataTable({
-                    "initComplete": function(settings, json) {
-                        $('.popuptrigger').popup({
-                            on: 'click'
-                        });
-                    }
-                });
+                $('#filesTable')
+                .on('draw.dt', function() {tableRedrawn();})
+                .DataTable();
             });
         </script>
     </head>
     <body>
-        <!--
-        <div class="ui inverted menu">
-            <a href="/" class="item">
-                Home
-            </a>
-            <form class="right item" id="navigateForm" action="/Page/NavigateForm" method="post">
-                <div class="ui inverted transparent input">
-                    <input type="text" name="pageName" placeholder="Navigate to...">
-                </div>
-                <button type="submit" class="ui black button">Go</button>
-            </form>
-            <div class="ui inverted dropdown icon item">
-                <i class="wrench icon"></i>
-                <div class="menu">
-                    <a class="item" href="/ViewPage/Special|List of pages">
-                        Special|List of pages
-                    </a>
-                    <a class="item" href="/NewPage">
-                        New Page
-                    </a>
-                    <a class="item" href="/ManageTemplates">
-                        Manage Templates
-                    </a>
-                    <a class="item" href="/ManageFiles">
-                        Manage Files
-                    </a>
-                    <a class="item" href="/Admin/ControlPanel">
-                        Control Panel
-                    </a>
-                    <a class="item" href="/Docs/About">
-                        About @ViewData["SoftwareName"]
-                    </a>
-                    <a class="item" href="/Docs/Syntax">
-                        Syntax Guide
-                    </a>
-                </div>
-            </div>
-        </div>-->
         <partial name="_Navbar" />
         <div id="customContent">
             <div class="ui header">

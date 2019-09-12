@@ -7,6 +7,7 @@ using System.Web;
 using System.Data;
 using System.Configuration;
 using System.IO;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
@@ -47,6 +48,7 @@ namespace webweb.Controllers
             string[] pageData = sa.GetPageByName(id);
             string pageContents = pageData[0];
             string fixNameCaps = sa.FixNameCaps(id);
+            List<string> authCredentials = new List<string>();
             ViewData["PageName"] = ((fixNameCaps == "") ? id : fixNameCaps);
             if (pageContents == "")
             {
@@ -61,6 +63,10 @@ namespace webweb.Controllers
             else
             {
                 ViewData["CustomHtml"] = applySyntaxRules(pageContents, ViewData["PageName"].ToString());
+                Dictionary<string, object> authProcessedText =
+                    applyAuthenticationRules(ViewData["CustomHtml"].ToString());
+                ViewData["CustomHtml"] = (string)authProcessedText["outText"];
+                authCredentials = (List<string>)authProcessedText["authCredentials"];
             }
             string newHtml = ViewData["CustomHtml"].ToString().Replace("{{HIDENAVBAR}}\r\n", "");
             if (newHtml != ViewData["CustomHtml"].ToString())
@@ -90,16 +96,40 @@ namespace webweb.Controllers
             ViewData["SiteName"] = getSiteSettings()["SiteName"];
             if (_userManager.Users.ToList().Count < 1) { return RedirectToPage("/Account/Register", new { area = "Identity" }); }
 
+            bool credentialMatches = true;
+            
+            if (authCredentials.Count > 0)
+            {
+                credentialMatches = false;
+                var req = HttpContext.Request;
+                var auth = req.Headers["Authorization"];
+                if (!string.IsNullOrEmpty(auth))
+                {
+                    var cred = ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(auth.ToString().Substring(6))).Split(':');
+                    var user = new { Name = cred[0], Pass = cred[1] };
+                    foreach (string credentialPair in authCredentials)
+                    {
+                        var credentialList = credentialPair.Split("|");
+                        if (user.Name == credentialList[0] && user.Pass == credentialList[1])
+                        {
+                            credentialMatches = true;
+                            break; // Don't keep going through the credential list
+                        }
+                    }
+                }
+            }
             try
             {
+                if (!credentialMatches)
+                {
+                    HttpContext.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"This page is protected, please enter the username and password specific to the page.\"");
+                    return new UnauthorizedResult();
+                }
                 if ((!_signInManager.IsSignedIn(User)) && (ViewData["PageName"].ToString().Substring(0, 6) == "Draft|"))
                 {
                     return RedirectToAction("ViewPage", "Page", new {id = "Index"});
                 }
-                else
-                {
-                    return View();
-                }
+                return View();
             }
             catch (Exception ex)
             {
@@ -113,24 +143,6 @@ namespace webweb.Controllers
             wwBuildInfo.wwBuildInfo wwbi = new wwBuildInfo.wwBuildInfo();
             ViewData["VersionNumber"] = wwbi.GetVersion();
             ViewData["SoftwareName"] = wwbi.GetName();
-            /*
-            <div class="item" data-value="Testing 123">
-                                    <div class="ui tiny header">
-                                        Testing
-                                    </div>
-                                    <label>
-                                        This is a description. This is a description. This is a description. This is a description. This is a description. 
-                                    </label>
-                                </div>
-                                <div class="item" data-value="Testing 456">
-                                    <div class="ui tiny header">
-                                        Item 2
-                                    </div>
-                                    <label>
-                                        This is a description. This is a description. This is a description. This is a description. This is a description. 
-                                    </label>
-                                </div>
-            */
             DataSet templates = sa.GetTemplates();
             ViewData["TemplateHtml"] = "";
             foreach (DataRow dr in templates.Tables[0].Rows)
@@ -274,14 +286,14 @@ namespace webweb.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             {
-            SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
-            string newPageName = ((saveAsDraft == "true") ? "Draft|" : "") + pageName;
-            // Create the new page
-            DataSet selectedTemplate = sa.GetTemplateByName(template);
-            DataRow dR = selectedTemplate.Tables[0].Rows[0];
-            sa.NewPage(newPageName, dR["contents_html"].ToString(), dR["contents_css"].ToString(), dR["contents_js"].ToString(), dR["contents_head"].ToString());
-            // Send to the page
-            return RedirectToAction("EditPage", new { id = newPageName });
+                SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+                string newPageName = ((saveAsDraft == "true") ? "Draft|" : "") + pageName;
+                // Create the new page
+                DataSet selectedTemplate = sa.GetTemplateByName(template);
+                DataRow dR = selectedTemplate.Tables[0].Rows[0];
+                sa.NewPage(newPageName, dR["contents_html"].ToString(), dR["contents_css"].ToString(), dR["contents_js"].ToString(), dR["contents_head"].ToString());
+                // Send to the page
+                return RedirectToAction("EditPage", new { id = newPageName });
             }
             else
             {
@@ -293,12 +305,12 @@ namespace webweb.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             { 
-            SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
-            string newPageName = ((saveAsDraft == "true") ? "Draft|" : "") + pageName;
-            // Create the new page
-            sa.CreateEmptyPage(newPageName);
-            // Send to the page
-            return RedirectToAction("EditPage", new { id = newPageName });
+                SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+                string newPageName = ((saveAsDraft == "true") ? "Draft|" : "") + pageName;
+                // Create the new page
+                sa.CreateEmptyPage(newPageName);
+                // Send to the page
+                return RedirectToAction("EditPage", new { id = newPageName });
             }
             else
             {
@@ -310,9 +322,9 @@ namespace webweb.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             {
-            SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
-            string templateID = sa.NewTemplate(templateName);
-            return RedirectToAction("EditTemplate", new { id = templateID });
+                SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+                string templateID = sa.NewTemplate(templateName);
+                return RedirectToAction("EditTemplate", new { id = templateID });
             }
             else
             {
@@ -325,19 +337,19 @@ namespace webweb.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             {
-            SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
-            string newPageName = pageName;
-            if (saveAsDraft == "Yes")
-            {
-                newPageName = "Draft|" + pageName;
-            }
-            else if (saveAsDraft == "Undraft")
-            {
-                newPageName = pageName.Substring(6);
-                sa.DeletePage(pageName);
-            }
-            sa.NewPage(newPageName, HtmlEdit, CssEdit, JsEdit, HeadEdit);
-            return RedirectToAction("ViewPage", new { id = newPageName });
+                SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+                string newPageName = pageName;
+                if (saveAsDraft == "Yes")
+                {
+                    newPageName = "Draft|" + pageName;
+                }
+                else if (saveAsDraft == "Undraft")
+                {
+                    newPageName = pageName.Substring(6);
+                    sa.DeletePage(pageName);
+                }
+                sa.NewPage(newPageName, HtmlEdit, CssEdit, JsEdit, HeadEdit);
+                return RedirectToAction("ViewPage", new { id = newPageName });
             }
             else
             {
@@ -364,9 +376,9 @@ namespace webweb.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             {
-            SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
-            sa.EditTemplate(templateId, templateName, templateDesc, HtmlEdit, CssEdit, JsEdit, HeadEdit);
-            return RedirectToAction("ManageTemplates");
+                SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+                sa.EditTemplate(templateId, templateName, templateDesc, HtmlEdit, CssEdit, JsEdit, HeadEdit);
+                return RedirectToAction("ManageTemplates");
             }
             else
             {
@@ -378,9 +390,9 @@ namespace webweb.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             {
-            SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
-            sa.DeleteTemplate(templateId);
-            return RedirectToAction("ManageTemplates");
+                SqlAccess.SqlAccess sa = new SqlAccess.SqlAccess();
+                sa.DeleteTemplate(templateId);
+                return RedirectToAction("ManageTemplates");
             }
             else
             {
@@ -397,25 +409,25 @@ namespace webweb.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             { 
-            wwFileAccess.wwFileAccess wwfi = new wwFileAccess.wwFileAccess();
-            foreach (var postedFile in postedFiles)
-            {
-                if (postedFile == null) continue;
-                string path = wwfi.MapPath("~/wwwroot/Content/resources/");
-                if (!Directory.Exists(path))
+                wwFileAccess.wwFileAccess wwfi = new wwFileAccess.wwFileAccess();
+                foreach (var postedFile in postedFiles)
                 {
-                    Directory.CreateDirectory(path);
-                }
-                if (postedFile.Length > 0)
-                {
-                    var filePath = Path.Combine(path, postedFile.FileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    if (postedFile == null) continue;
+                    string path = wwfi.MapPath("~/wwwroot/Content/resources/");
+                    if (!Directory.Exists(path))
                     {
-                        await postedFile.CopyToAsync(fileStream);
+                        Directory.CreateDirectory(path);
+                    }
+                    if (postedFile.Length > 0)
+                    {
+                        var filePath = Path.Combine(path, postedFile.FileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await postedFile.CopyToAsync(fileStream);
+                        }
                     }
                 }
-            }
-            return RedirectToAction("ManageFiles");
+                return RedirectToAction("ManageFiles");
             }
             else
             {
@@ -427,9 +439,9 @@ namespace webweb.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             {
-            wwFileAccess.wwFileAccess wwfi = new wwFileAccess.wwFileAccess();
-            wwfi.MoveFile(oldFileName, newFileName);
-            return RedirectToAction("ManageFiles");
+                wwFileAccess.wwFileAccess wwfi = new wwFileAccess.wwFileAccess();
+                wwfi.MoveFile(oldFileName, newFileName);
+                return RedirectToAction("ManageFiles");
             }
             else
             {
@@ -499,6 +511,40 @@ namespace webweb.Controllers
             //// Replace {{PAGENAME}} with currentPageName
             outText = outText.Replace("{{PAGENAME}}", currentPageName);
             return outText;
+        }
+        
+        /// <summary>
+        /// Apply the authentication filter to the input text
+        /// </summary>
+        /// <param name="inText">The text to apply the filter to</param>
+        /// <returns>A new Dictionary&lt;string, object&gt;:
+        /// {
+        ///     {"outText", string outText},
+        ///     {"authCredentials", new List&lt;string&gt; authCredentials)
+        /// }
+        /// </returns>
+        public Dictionary<string, object> applyAuthenticationRules(string inText)
+        {
+            string outText = inText;
+            List<string> authCredentials = new List<string>();
+            string regexPattern1 = @"(?<={{USEAUTH:).+\|.+(?=}})";
+            // Regex explanation
+            // (?<={{USEAUTH:) # The string "{{USEAUTH:" should precede the text
+            // .+ # At least one character
+            // \| # "|" should be next
+            // .+ # At least one character
+            // (?=}}) # The string "}}" should be after the text
+            MatchEvaluator myEvaluator = new MatchEvaluator((match) => { authCredentials.Add(match.Value);
+                return "";
+            });
+            outText = Regex.Replace(outText, regexPattern1, myEvaluator);
+            // Replace the empty USEAUTH(s) with nothing
+            outText = outText.Replace("{{USEAUTH:}}\r\n", "");
+            return new Dictionary<string, object>
+            {
+                {"outText", outText},
+                {"authCredentials", authCredentials}
+            };
         }
     }
 }
